@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const hide = require('hide-secrets');
+require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -14,8 +14,8 @@ app.use(express.json());
 const db = mysql.createConnection(
     {
         host: 'localhost',
-        user: 'root',
-        password: 'rootroot',
+        user: process.env.SQLUSER,
+        password: process.env.SQLPASSWORD,
         database: 'company_db'
     },
     console.log('Succesfully connect to company_db database!')
