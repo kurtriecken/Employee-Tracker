@@ -3,20 +3,21 @@
 
 getPrompts = [
     {
-        name: 'name',
-        type: 'input',
-        message: 'What is your name?'
-    },
-    {
-        name: 'age',
-        type: 'input',
-        message: 'What is your age?'
-    },
-    {
-        name: 'color',
+        name: 'choice',
         type: 'list',
-        message: 'What is your favorite color?',
-        choices: ['red', 'blue', 'green']
+        message: 'What information would you like to see?',
+        choices : [
+            {
+                name: "See all employees"
+            },
+            {
+                name: "See all departments"
+            },
+            {
+                name: "See all roles"
+            }
+        ],
+        default: "See all departments"
     }
 ];
 

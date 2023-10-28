@@ -5,8 +5,9 @@ const prompts = require('./scripts/prompts');
 require('dotenv').config();
 
 const figlet = require('figlet');
+const welcome = require('./scripts/welcome')
 
-// const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 
 // Express middleware
@@ -21,7 +22,7 @@ const db = mysql.createConnection(
         password: process.env.SQLPASSWORD,
         database: 'company_db'
     },
-    console.log('Succesfully connect to company_db database!')
+    // console.log('Succesfully connect to company_db database!')
 );
 
 // TESTING queries
@@ -37,8 +38,11 @@ const db = mysql.createConnection(
 
 async function main() {
     // console.log(prompts.getPrompts);
-    const answers = await inquirer.prompt(prompts);
-    console.log(answers);
+    await inquirer.prompt(prompts)
+        .then((response) => {
+            console.log(response.choice);
+        });
+    // console.log(answers.choice);
 };
 
 
@@ -47,16 +51,9 @@ app.use((req, res) => {
     res.status(404).end();
 });
 
-// app.listen(PORT, () => {
-//     console.log(`Server running on port ${PORT}`);
-// })
+app.listen(PORT, () => {
+    // console.log(`Server running on port ${PORT}`);
+})
 
-figlet("Radical, Dude!\nLet's Party!", function (err, data) {
-    if (err) {
-        console.log("Something went wrong...");
-        console.dir(err);
-        return;
-    }
-    console.log(data);
-});
-// main();
+// welcome();
+main();
