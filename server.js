@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
+const hide = require('hide-secrets');
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -19,6 +20,17 @@ const db = mysql.createConnection(
     },
     console.log('Succesfully connect to company_db database!')
 );
+
+// TESTING queries
+db.query('SELECT * FROM department', function (err, results) {
+    console.table(results);
+});
+db.query('SELECT * FROM role', function (err, results) {
+    console.table(results);
+});
+db.query('SELECT * FROM employee', function (err, results) {
+    console.table(results);
+});
 
 // Default response for other requests
 app.use((req, res) => {
