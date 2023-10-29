@@ -37,7 +37,7 @@ var pool = mysql.createPool({
 });
 
 async function getEmployees() {
-    console.table((await pool.query('SELECT * FROM employee'))[0]);
+    console.table((await pool.query('SELECT first_name, last_name, role.title FROM EMPLOYEE INNER JOIN role ON employee.role_id = role.id'))[0]);
 };
 
 async function getRoles() {
