@@ -48,20 +48,39 @@ async function getDepartments() {
     console.table((await pool.query('SELECT * FROM department'))[0]);
 };
 
+async function addDepartment() {
+    const newDep = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'department',
+            message: 'What would you like the department to be called?'
+        }
+    ]);
+    // console.trace(newDep);
+    // console.trace(newDep.name);
+    await pool.query(`INSERT INTO department (name) VALUES ("${newDep.department}");`);
+}
+
 async function askQuestions() {
     const answers = await inquirer.prompt(prompts);
     // console.trace(answers);
     if (answers.choice == 'See all employees') {
         await getEmployees();
+        await askQuestions();
     }
     else if (answers.choice == 'See all roles') {
         await getRoles();
+        await askQuestions();
     }
     else if (answers.choice == 'See all departments') {
         await getDepartments();
+        await askQuestions();
     }
-
-    await askQuestions();
+    else if (answers.choice == 'Add a department') {
+        await addDepartment();
+        await askQuestions();
+    };
+    
 };
 
 

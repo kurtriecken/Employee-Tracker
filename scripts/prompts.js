@@ -26,7 +26,7 @@ const initialQuestionsArr = [
     {
         name: 'choice',
         type: 'list',
-        message: 'What information would you like to see?',
+        message: 'What would you like to do?',
         choices : [
             {
                 name: "See all employees"
@@ -36,6 +36,18 @@ const initialQuestionsArr = [
             },
             {
                 name: "See all roles"
+            },
+            {
+                name: "Add a department"
+            },
+            {
+                name: "Add a role"
+            },
+            {
+                name: "Add an employee"
+            },
+            {
+                name: "Update an employee role"
             }
         ],
         default: "See all departments"
