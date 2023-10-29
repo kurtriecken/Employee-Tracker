@@ -7,8 +7,8 @@ const { trace } = require('console');
 // const util = require('util');
 require('dotenv').config();
 
-// const figlet = require('figlet');
-// const welcome = require('./scripts/welcome')
+const figlet = require('figlet');
+const welcome = require('./scripts/welcome')
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -37,13 +37,15 @@ var pool = mysql.createPool({
 });
 
 async function getEmployees() {
-    // console.trace(whatever);
     console.table((await pool.query('SELECT * FROM employee'))[0]);
 };
 
 async function getRoles() {
-    // console.trace(whatever);
     console.table((await pool.query('SELECT * FROM role'))[0]);
+};
+
+async function getDepartments() {
+    console.table((await pool.query('SELECT * FROM department'))[0]);
 };
 
 async function askQuestions() {
@@ -55,91 +57,19 @@ async function askQuestions() {
     else if (answers.choice == 'See all roles') {
         await getRoles();
     }
-    // await getEmployees(answers);
-    // await getRoles();
-    // console.table(data);
-    askQuestions();
+    else if (answers.choice == 'See all departments') {
+        await getDepartments();
+    }
+
+    await askQuestions();
 };
 
-askQuestions();
 
-// TESTING queries
-// async function testQuery() {
-//     console.trace('in here');
-//     const db = await mysql.createConnection(
-//         {
-//             host: '127.0.0.1',
-//             user: process.env.SQLUSER,
-//             password: process.env.SQLPASSWORD,
-//             database: 'company_db'
-//         },
-//     );
-//     await db.execute('SELECT * FROM employee', function (err, results) {
-//         console.trace('in here');
-//         console.table(results);
-//     });
-//     // (await db).end();
-//     // switch (response.choice) {
-//     //     case "See all employees":
-//     //         db.query('SELECT * FROM employee', function (err, results) {
-//     //             console.table(results);
-//     //             return results;
-//     //         });
-//     //         break;
-//     //     case "See all roles":
-//     //         db.query('SELECT * FROM role', function (err, results) {
-//     //             console.table(results);
-//     //             return results;
-//     //         });
-//     //         break;
-//     //     case "See all departments":
-//     //         db.query('SELECT * FROM department', function (err, results) {
-//     //             console.table(results);
-//     //             console.log(typeof results);
-//     //             return results;
-//     //         });
-//     //         break;
-//     // }
-// };
 
-// async function initQuestion()  {
-//     await inquirer.prompt(prompts)
-//         .then((response) => {
-//             console.trace(response);
-//             // return query('SELECT * FROM employee');
-//             testQuery();
-//             // switch (response.choice) {
-//             //     case "See all employees":
-//             //         db.query('SELECT * FROM employee', function (err, results) {
-//             //             console.table(results);
-//             //             return results;
-//             //         });
-//             //         break;
-//             //     case "See all roles":
-//             //         db.query('SELECT * FROM role', function (err, results) {
-//             //             console.table(results);
-//             //             return results;
-//             //         });
-//             //         break;
-//             //     case "See all departments":
-//             //         db.query('SELECT * FROM department', function (err, results) {
-//             //             console.table(results);
-//             //             console.log(typeof results);
-//             //             return results;
-//             //         });
-//             //         break;
-//             // }
-//             // console.log('\n');
-//         })
-//         .then((res) => {
-//             console.trace(typeof res);
-//             initQuestion();
-//         })
-// };
-
-// function main() {
-//     // initQuestion();
-// };
+async function main() {
+    await welcome();
+    await askQuestions();
+};
 
 
 // Default response for other requests
@@ -152,4 +82,4 @@ askQuestions();
 // })
 
 // welcome();
-// main();
+main();
