@@ -62,6 +62,10 @@ async function addDepartment() {
 }
 
 async function addRole() {
+    // let depList = await pool.query('SELECT name FROM department');
+    // console.log(depList[0][0].name);
+    let depArr = (await pool.query('SELECT name FROM department'))[0].map((obj) => obj.name)
+    // console.log(depArr);
     const newRole = await inquirer.prompt([
         {
             type: 'input',
@@ -72,12 +76,24 @@ async function addRole() {
             type: 'input',
             name: 'salary',
             message: 'What is the salary for this role (in dollars)?'
+        },
+        {
+            type: 'list',
+            name: 'department',
+            message: 'To which department does this role belong?',
+            choices: depArr
         }
     ]);
-    await pool.query(`INSERT INTO role (title, salary) VALUES ("${newRole.role}", "${newRole.salary}");`);
+    let depID = (await pool.query(`SELECT id FROM department WHERE name = "${newRole.department}";`))[0][0].id;
+    console.log(depID);
+    await pool.query(`INSERT INTO role (title, salary, department_id) VALUES ("${newRole.role}", "${newRole.salary}", ${depID});`);
 };
 
 async function addEmployee() {
+    let roleArr = (await pool.query('SELECT title FROM role'))[0].map((obj) => obj.name)
+    console.log(roleArr);
+    let manArr = (await pool.query('SELECT first_name, last_name FROM employee'))[0].map((obj) => obj.name)
+    console.log(manArr);
     const newEmp = await inquirer.prompt([
         {
             type: 'input',
