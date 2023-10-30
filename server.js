@@ -28,6 +28,8 @@ app.use(express.json());
 //     },
 // );
 
+// CHANGE TO CREATE CONNECTION
+// DO NOT USE POOL
 var pool = mysql.createPool({
     connectionLimit: 10,
     host: 'localhost',
@@ -56,10 +58,45 @@ async function addDepartment() {
             message: 'What would you like the department to be called?'
         }
     ]);
-    // console.trace(newDep);
-    // console.trace(newDep.name);
     await pool.query(`INSERT INTO department (name) VALUES ("${newDep.department}");`);
 }
+
+async function addRole() {
+    const newRole = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'role',
+            message: 'What would you like the role to be called?'
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: 'What is the salary for this role (in dollars)?'
+        }
+    ]);
+    await pool.query(`INSERT INTO role (title, salary) VALUES ("${newRole.role}", "${newRole.salary}");`);
+};
+
+async function addEmployee() {
+    const newEmp = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'name',
+            message: "What is the employee's name?"
+        }
+    ]);
+    let fullName = newEmp.name;
+    console.trace(fullName);
+    let nameArr = fullName.split(' ');
+    let firstName = nameArr[0];
+    let lastName = '';
+    if (nameArr.length != 1) {
+        lastName = nameArr[1];
+    }
+    console.log(nameArr);
+    console.log(`first name: ${firstName}, last name: ${lastName}`);
+    await pool.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${firstName}", "${lastName}", 2, 2);`);
+};
 
 async function askQuestions() {
     const answers = await inquirer.prompt(prompts);
@@ -79,7 +116,15 @@ async function askQuestions() {
     else if (answers.choice == 'Add a department') {
         await addDepartment();
         await askQuestions();
-    };
+    }
+    else if (answers.choice == 'Add a role') {
+        await addRole();
+        await askQuestions();
+    }
+    else if (answers.choice == 'Add an employee') {
+        await addEmployee();
+        await askQuestions();
+    }
     
 };
 
