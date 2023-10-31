@@ -50,10 +50,20 @@ var pool = mysql.createPool({
 });
 
 async function getEmployees() {
-    console.table((await pool.query(`SELECT e.id as Employee_ID, CONCAT(e.first_name," ", e.last_name) as Employee_Name, role.title, CONCAT(m.FIRST_NAME," ",m.last_name) as Manager 
-    from EMPLOYEE e 
-    join role on e.role_id = role.id 
-    join employee m where e.MANAGER_ID = m.ID;`))[0]);
+    console.table((await pool.query(`select E.id as EMPLOYEE_ID, CONCAT(e.first_name," ", e.last_name) as Employee_Name, R.title as Job_title, D.name as Dep_Name, R.SALARY as Salary, CONCAT(M.first_name," ", M.last_name) as Manager 
+    from EMPLOYEE E 
+    inner join role R
+    on E.ROLE_ID = R.ID
+    inner join (
+        select id, name
+        from DEPARTMENT 
+        ) D
+        on R.DEPARTMENT_ID = D.id
+    inner join (
+        select id, first_name, last_name
+        from EMPLOYEE
+        ) M
+        on E.MANAGER_ID = M.ID;`))[0]);
 };
 
 async function getRoles() {
