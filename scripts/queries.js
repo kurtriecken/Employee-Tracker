@@ -1,12 +1,12 @@
 const mysql = require('mysql2');
 
-var pool = mysql.createPool({
-    connectionLimit: 10,
-    host: 'localhost',
-    user: process.env.SQLUSER,
-    password: process.env.SQLPASSWORD,
-    database: 'company_db'
-});
+// var pool = mysql.createPool({
+//     connectionLimit: 10,
+//     host: 'localhost',
+//     user: process.env.SQLUSER,
+//     password: process.env.SQLPASSWORD,
+//     database: 'company_db'
+// });
 
 // function query() {
 //     db.query('SELECT * FROM employee', function (err, results) {

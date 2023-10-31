@@ -14,14 +14,30 @@ const welcome = require('./scripts/welcome')
 
 
 // Connect to the database
-// const db = mysql.createConnection(
-//     {
-//         host: '127.0.0.1',
-//         user: process.env.SQLUSER,
-//         password: process.env.SQLPASSWORD,
-//         database: 'company_db'
-//     },
-// );
+// async function ConnectToDatabase() {
+//     try {
+//         const connection = await mysql.createPool({
+//             host: 'localhost',
+//             user: process.env.SQLUSER,
+//             password: process.env.SQLPASSWORD,
+//             database: 'company_db'
+//         });
+//         console.log('Connection successful!');
+//         console.table((await connection.query('SELECT * FROM department'))[0]);
+
+
+//         return connection;
+//     } catch (error) {
+//         console.error('Error connecting to the database ' + error);
+//         throw error;
+//     }
+// }
+
+
+
+// pool.query('SELECT * FROM department', function (err, results) {
+//     console.table(results);
+// });
 
 // CHANGE TO CREATE CONNECTION
 // DO NOT USE POOL
@@ -84,7 +100,7 @@ async function addRole() {
         }
     ]);
     let depID = (await pool.query(`SELECT id FROM department WHERE name = "${newRole.department}";`))[0][0].id;
-    console.log(depID);
+    // console.log(depID);
     await pool.query(`INSERT INTO role (title, salary, department_id) VALUES ("${newRole.role}", "${newRole.salary}", ${depID});`);
 };
 
@@ -185,6 +201,7 @@ async function askQuestions() {
     }
 
 };
+
 
 
 
