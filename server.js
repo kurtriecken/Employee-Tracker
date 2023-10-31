@@ -10,37 +10,6 @@ require('dotenv').config();
 const figlet = require('figlet');
 const welcome = require('./scripts/welcome')
 
-
-
-
-// Connect to the database
-// async function ConnectToDatabase() {
-//     try {
-//         const connection = await mysql.createPool({
-//             host: 'localhost',
-//             user: process.env.SQLUSER,
-//             password: process.env.SQLPASSWORD,
-//             database: 'company_db'
-//         });
-//         console.log('Connection successful!');
-//         console.table((await connection.query('SELECT * FROM department'))[0]);
-
-
-//         return connection;
-//     } catch (error) {
-//         console.error('Error connecting to the database ' + error);
-//         throw error;
-//     }
-// }
-
-
-
-// pool.query('SELECT * FROM department', function (err, results) {
-//     console.table(results);
-// });
-
-// CHANGE TO CREATE CONNECTION
-// DO NOT USE POOL
 var pool = mysql.createPool({
     connectionLimit: 10,
     host: 'localhost',
@@ -87,10 +56,7 @@ async function addDepartment() {
 }
 
 async function addRole() {
-    // let depList = await pool.query('SELECT name FROM department');
-    // console.log(depList[0][0].name);
     let depArr = (await pool.query('SELECT name FROM department'))[0].map((obj) => obj.name)
-    // console.log(depArr);
     const newRole = await inquirer.prompt([
         {
             type: 'input',
@@ -110,7 +76,6 @@ async function addRole() {
         }
     ]);
     let depID = (await pool.query(`SELECT id FROM department WHERE name = "${newRole.department}";`))[0][0].id;
-    // console.log(depID);
     await pool.query(`INSERT INTO role (title, salary, department_id) VALUES ("${newRole.role}", "${newRole.salary}", ${depID});`);
 };
 
@@ -180,7 +145,6 @@ async function updateEmployee() {
 
 async function askQuestions() {
     const answers = await inquirer.prompt(prompts);
-    // console.trace(answers);
     if (answers.choice == 'See all employees') {
         await getEmployees();
         await askQuestions();
@@ -211,9 +175,6 @@ async function askQuestions() {
     }
 
 };
-
-
-
 
 async function main() {
     await welcome();

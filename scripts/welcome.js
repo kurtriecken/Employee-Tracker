@@ -1,7 +1,7 @@
 const figlet = require('figlet');
 
 async function printWelcome() {
-    await figlet("Radical, Dude!\nLet's Party!", function (err, data) {
+    await figlet("Welcome to the...\nEmployee Manager!", function (err, data) {
     if (err) {
         console.log("Something went wrong...");
         console.dir(err);
