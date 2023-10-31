@@ -1,21 +1,16 @@
-// const express = require('express');
+
 const inquirer = require('inquirer');
 const prompts = require('./scripts/prompts');
 const mysql = require('mysql2/promise');
 const { trace } = require('console');
-// const query = require('./scripts/queries')
-// const util = require('util');
+const { query } = require('./scripts/queries.js')
+
 require('dotenv').config();
 
 const figlet = require('figlet');
 const welcome = require('./scripts/welcome')
 
-// const PORT = process.env.PORT || 3000;
-// const app = express();
 
-// Express middleware
-// app.use(express.urlencoded({ extended: false }));
-// app.use(express.json());
 
 
 // Connect to the database
