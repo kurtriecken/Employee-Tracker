@@ -1,4 +1,4 @@
-const express = require('express');
+// const express = require('express');
 const inquirer = require('inquirer');
 const prompts = require('./scripts/prompts');
 const mysql = require('mysql2/promise');
@@ -10,12 +10,12 @@ require('dotenv').config();
 const figlet = require('figlet');
 const welcome = require('./scripts/welcome')
 
-const PORT = process.env.PORT || 3000;
-const app = express();
+// const PORT = process.env.PORT || 3000;
+// const app = express();
 
 // Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
 
 
 // Connect to the database
@@ -39,11 +39,15 @@ var pool = mysql.createPool({
 });
 
 async function getEmployees() {
-    console.table((await pool.query(`select CONCAT(e.first_name," ", e.last_name) as Employee_Name, role.title, CONCAT(m.FIRST_NAME," ",m.last_name) as Manager from EMPLOYEE e join role on e.role_id = role.id join employee m where e.MANAGER_ID = m.ID;`))[0]);
+    console.table((await pool.query(`SELECT e.id as Employee_ID, CONCAT(e.first_name," ", e.last_name) as Employee_Name, role.title, CONCAT(m.FIRST_NAME," ",m.last_name) as Manager 
+    from EMPLOYEE e 
+    join role on e.role_id = role.id 
+    join employee m where e.MANAGER_ID = m.ID;`))[0]);
 };
 
 async function getRoles() {
-    console.table((await pool.query('SELECT * FROM role'))[0]);
+    console.table((await pool.query(`SELECT title, role.id AS Role_ID, department.name AS Department_Name, salary
+    FROM role INNER JOIN department WHERE department_id = department.id`))[0]);
 };
 
 async function getDepartments() {
@@ -90,29 +94,68 @@ async function addRole() {
 };
 
 async function addEmployee() {
-    let roleArr = (await pool.query('SELECT title FROM role'))[0].map((obj) => obj.name)
-    console.log(roleArr);
-    let manArr = (await pool.query('SELECT first_name, last_name FROM employee'))[0].map((obj) => obj.name)
-    console.log(manArr);
+    let roleArr = (await pool.query('SELECT title FROM role'))[0].map((obj) => obj.title);
+    let manArr = (await pool.query('SELECT first_name, last_name FROM employee'))[0].map((obj) => obj.first_name + ' ' + obj.last_name);
+
     const newEmp = await inquirer.prompt([
         {
             type: 'input',
             name: 'name',
             message: "What is the employee's name?"
+        },
+        {
+            type: 'list',
+            name: 'role',
+            message: "What is this employee's role?",
+            choices: roleArr
+        },
+        {
+            type: 'list',
+            name: 'manager',
+            message: "Who is this employee's manager?",
+            choices: manArr
         }
     ]);
-    let fullName = newEmp.name;
-    console.trace(fullName);
-    let nameArr = fullName.split(' ');
+    let depID = (await pool.query(`SELECT id FROM role 
+        WHERE title = "${newEmp.role}";`))[0][0].id;
+    let manID = (await pool.query(`SELECT id FROM employee 
+        WHERE first_name = "${newEmp.manager.split(' ')[0]}" AND last_name = "${newEmp.manager.split(' ')[1]}";`))[0][0].id;
+
+    let nameArr = newEmp.name.split(' ');
     let firstName = nameArr[0];
-    let lastName = '';
-    if (nameArr.length != 1) {
-        lastName = nameArr[1];
-    }
-    console.log(nameArr);
-    console.log(`first name: ${firstName}, last name: ${lastName}`);
-    await pool.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${firstName}", "${lastName}", 2, 2);`);
+    let lastName = nameArr[1];
+
+    await pool.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) 
+        VALUES ("${firstName}", "${lastName}", ${depID}, ${manID});`);
 };
+
+async function updateEmployee() {
+    let empArr = (await pool.query('SELECT first_name, last_name FROM employee'))[0].map((obj) => obj.first_name + ' ' + obj.last_name);
+    let roleArr = (await pool.query('SELECT title FROM role'))[0].map((obj) => obj.title);
+
+    const empUpdate = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'name',
+            message: 'Which employee would you like to update?',
+            choices: empArr
+        },
+        {
+            type: 'list',
+            name: 'role',
+            message: 'What is their new role?',
+            choices: roleArr
+        }
+    ]);
+    let roleID = (await pool.query(`SELECT id FROM role 
+        WHERE title = "${empUpdate.role}";`))[0][0].id;
+    let nameArr = empUpdate.name.split(' ');
+    let firstName = nameArr[0];
+    let lastName = nameArr[1];
+
+    await pool.query(`UPDATE employee SET role_id = ${roleID} WHERE first_name = "${firstName}" AND last_name = "${lastName}";`)
+
+}
 
 async function askQuestions() {
     const answers = await inquirer.prompt(prompts);
@@ -141,7 +184,11 @@ async function askQuestions() {
         await addEmployee();
         await askQuestions();
     }
-    
+    else if (answers.choice == 'Update an employee role') {
+        await updateEmployee();
+        await askQuestions();
+    }
+
 };
 
 
@@ -151,15 +198,4 @@ async function main() {
     await askQuestions();
 };
 
-
-// Default response for other requests
-// app.use((req, res) => {
-//     res.status(404).end();
-// });
-
-// app.listen(PORT, () => {
-//     // console.log(`Server running on port ${PORT}`);
-// })
-
-// welcome();
 main();
