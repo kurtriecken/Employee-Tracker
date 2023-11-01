@@ -1,3 +1,4 @@
+// Script for start message
 const figlet = require('figlet');
 
 async function printWelcome() {

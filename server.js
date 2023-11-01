@@ -1,27 +1,26 @@
 // Module imports
 const inquirer = require('inquirer');
-
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 const welcome = require('./scripts/welcome')
 
-const { initialQuestionsArr,
-    addDepArr, 
-    } = require('./scripts/prompts');
+// Prompts import
+const { initialQuestionsArr, addDepArr,} = require('./scripts/prompts');
 
-const { getEmployeeData, 
+// Imports queries
+const { getEmployeeData,
     getRoleData,
     getDepartmentData,
     addDepartmentQuery,
     getDeptNames,
-    getDeptNameByID, 
+    getDeptNameByID,
     addNewRole,
-    getRoleTitles, 
+    getRoleTitles,
     getEmployeeNames,
     getRoleIDByTitle,
     getEmployeeIDByName,
     insertNewEmployee,
-    updateEmployeeRole} = require('./scripts/queries')
+    updateEmployeeRole } = require('./scripts/queries')
 
 // Create connection
 var pool = mysql.createPool({
@@ -32,23 +31,28 @@ var pool = mysql.createPool({
     database: 'company_db'
 });
 
+// Returns a table of all employees
 async function getEmployees() {
     console.table((await pool.query(getEmployeeData))[0]);
 };
 
+// Returns a table of all roles
 async function getRoles() {
     console.table((await pool.query(getRoleData))[0]);
 };
 
+// Returns a table of all departments
 async function getDepartments() {
     console.table((await pool.query(getDepartmentData))[0]);
 };
 
+// Adds a new department
 async function addDepartment() {
     const newDep = await inquirer.prompt(addDepArr);
     await pool.query(addDepartmentQuery, newDep.department);
 }
 
+// Adds a new role
 async function addRole() {
     let depArr = (await pool.query(getDeptNames))[0].map((obj) => obj.name)
     const newRole = await inquirer.prompt([
@@ -77,9 +81,10 @@ async function addRole() {
         }
     ]);
     let depID = (await pool.query(getDeptNameByID, newRole.department))[0][0].id;
-    await pool.query(addNewRole, [ newRole.role, newRole.salary, depID ]);
+    await pool.query(addNewRole, [newRole.role, newRole.salary, depID]);
 };
 
+// Adds a new employee
 async function addEmployee() {
     let roleArr = (await pool.query(getRoleTitles))[0].map((obj) => obj.title);
     let manArr = (await pool.query(getEmployeeNames))[0].map((obj) => obj.first_name + ' ' + obj.last_name);
@@ -113,6 +118,7 @@ async function addEmployee() {
     await pool.query(insertNewEmployee, [firstName, lastName, depID, manID]);
 };
 
+// Updates an employee's role
 async function updateEmployee() {
     let empArr = (await pool.query(getEmployeeNames))[0].map((obj) => obj.first_name + ' ' + obj.last_name);
     let roleArr = (await pool.query(getRoleTitles))[0].map((obj) => obj.title);
@@ -140,6 +146,8 @@ async function updateEmployee() {
 
 }
 
+// Recursively called function to prompt user with questions
+// Calls appropriate methods to query the DB
 async function askQuestions() {
     const answers = await inquirer.prompt(initialQuestionsArr);
     if (answers.choice == 'See all employees') {
@@ -173,6 +181,7 @@ async function askQuestions() {
 
 };
 
+// Prints start message and enters the quetsions loop
 async function main() {
     await welcome();
     await askQuestions();

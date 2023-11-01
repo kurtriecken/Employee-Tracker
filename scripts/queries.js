@@ -1,6 +1,4 @@
-
-
-
+// Queries file
 let getEmployeeData = `select E.id as EMPLOYEE_ID, CONCAT(e.first_name," ", e.last_name) as Employee_Name, R.title as Job_title, D.name as Dep_Name, R.SALARY as Salary, CONCAT(M.first_name," ", M.last_name) as Manager 
 from EMPLOYEE E 
 inner join role R
