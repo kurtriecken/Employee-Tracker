@@ -1,4 +1,4 @@
-const inquirer = require('inquirer');
+// const inquirer = require('inquirer');
 
 const initialQuestionsArr = [
     {
@@ -32,6 +32,36 @@ const initialQuestionsArr = [
     }
 ];
 
+const addDepArr = [
+    {
+        type: 'input',
+        name: 'department',
+        message: 'What would you like the department to be called?'
+    }
+];
+
+// const addRoleArr = [
+//     {
+//         type: 'input',
+//         name: 'role',
+//         message: 'What would you like the role to be called?'
+//     },
+//     {
+//         type: 'input',
+//         name: 'salary',
+//         message: 'What is the salary for this role (in dollars)?'
+//     },
+//     {
+//         type: 'list',
+//         name: 'department',
+//         message: 'To which department does this role belong?',
+//         choices: depArr
+//     }
+// ];
 
 
-module.exports = initialQuestionsArr;
+
+
+
+module.exports = { initialQuestionsArr,
+    addDepArr };
